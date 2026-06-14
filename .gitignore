@@ -1,0 +1,20 @@
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+
+# DuckDB local database file
+*.duckdb
+*.duckdb.wal
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# dbt profiles (never commit credentials)
+profiles.yml
+
+# OS
+.DS_Store
