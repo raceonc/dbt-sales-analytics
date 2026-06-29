@@ -1,0 +1,5 @@
+customer_code,customer_name,customer_segment,region
+CUST-A,Acme Corp,Enterprise,VIC
+CUST-B,Brightside Ltd,Mid-Market,NSW
+CUST-C,Crestwood Co,Enterprise,VIC
+CUST-D,Delta Services,SMB,QLD
