@@ -40,7 +40,7 @@ final as (
         a.unit_price,
         a.unit_cost,
         a.gross_sales,
-        a.standard_cost_of_goods_sold,
+        a.standard_cost,
         a.gross_margin
 
     from actuals a

@@ -2,19 +2,77 @@ version: 2
 
 models:
   - name: fct_sales
+    description: >
+      Sales fact table. Grain: one row per order line item per scenario —
+      unique combination of sop_number, sop_line, and scenario_code.
+      Conforms stg_sales to customer, product, and scenario dimensions via
+      left joins on unique-tested dimension keys, so the join layer cannot
+      fan out rows beyond the staging grain.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - sop_number
+              - sop_line
+              - scenario_code
     columns:
       - name: sop_number
+        description: "Order number from the ERP. Part of the grain."
         tests:
           - not_null
+      - name: sop_line
+        description: "Line sequence number within the order. Part of the grain."
+        tests:
+          - not_null
+      - name: transaction_date
+        description: "Date the transaction was posted."
+      - name: customer_code
+        description: "Foreign key to the customer dimension."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_code
       - name: customer_name
+        description: "Customer's display name, from the customer dimension."
+      - name: customer_segment
+        description: "Business segment the customer is classified under."
+      - name: region
+        description: "Geographic region the customer is assigned to."
+      - name: product_code
+        description: "Foreign key to the product dimension."
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_code
       - name: product_name
+        description: "Product's display name, from the product dimension."
+      - name: product_category
+        description: "Category the product is classified under."
+      - name: scenario_code
+        description: "Foreign key to the scenario dimension. Part of the grain. Currently ACT only — designed to extend to future actuals-side scenarios."
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_scenarios')
+                field: scenario_code
       - name: scenario_name
-        tests:
-          - not_null
+        description: "Scenario's display name, from the scenario dimension."
+      - name: scenario_type
+        description: "Classification of the scenario type."
+      - name: quantity
+        description: "Quantity of product sold."
+      - name: unit_price
+        description: "Price per unit at time of sale."
+      - name: unit_cost
+        description: "Standard cost per unit."
       - name: gross_sales
-        tests: 
-          - not_null
+        description: "Quantity multiplied by unit price."
+      - name: standard_cost
+        description: "Quantity multiplied by unit cost."
+      - name: gross_margin
+        description: "Gross sales less standard cost of goods sold."
