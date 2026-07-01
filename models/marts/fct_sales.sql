@@ -1,5 +1,5 @@
 with actuals as (
-    select * from {{ ref('stg_sales_actuals')}}
+    select * from {{ ref('stg_sales')}}
 ),
 
 customers as (

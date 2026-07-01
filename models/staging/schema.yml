@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  - name: stg_sales_actuals
+  - name: stg_sales
     description: 
-      "Posted invoice data from ERP. Grain: one row per order line item
+      "Budget and Posted invoice data from ERP. Grain: one row per order line item
       by document date - unique combination of sop_number, product_code, doc_date"
     tests:
       - dbt_utils.unique_combination_of_columns:
