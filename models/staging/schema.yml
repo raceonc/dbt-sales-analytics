@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_sales_actuals
+    columns:
+      - name: sop_number
+        tests:
+          - not_null
+      - name: sop_line
+        tests:
+          - not_null
+      - name: customer_code
+        tests:
+          - not_null
+      - name: product_code
+        tests:
+          - not_null
+      - name: scenario_code
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['ACT', 'BUD']
+
+  - name: stg_customers
+    columns:
+      - name: customer_code
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_products
+    columns:
+      - name: product_code
+        tests: 
+          - not_null
+          - unique
+
+  - name: stg_scenarios
+    columns:
+      - name: scenario_code
+        tests:
+          - not_null
+          - unique

@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: fct_sales
+    columns:
+      - name: sop_number
+        tests:
+          - not_null
+      - name: customer_name
+        tests:
+          - not_null
+      - name: product_name
+        tests:
+          - not_null
+      - name: scenario_name
+        tests:
+          - not_null
+      - name: gross_sales
+        tests: 
+          - not_null
