@@ -14,7 +14,7 @@ renamed as (
         unit_price,
         unit_cost,
         (quantity * unit_price) as gross_sales,
-        (quantity * unit_cost) as standard_cost_of_goods_sold,
+        (quantity * unit_cost) as standard_cost,
         (quantity * unit_price) 
             - (quantity * unit_cost) as gross_margin
         from source
