@@ -2,6 +2,16 @@ version: 2
 
 models:
   - name: stg_sales_actuals
+    description: 
+      "Posted invoice data from ERP. Grain: one row per order line item
+      by document date - unique combination of sop_number, product_code, doc_date"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - sop_number
+              - sop_line
+              - scenario_code
     columns:
       - name: sop_number
         tests:
@@ -10,12 +20,18 @@ models:
         tests:
           - not_null
       - name: customer_code
+        description:
+          "foreign key for customer dimension table"
         tests:
           - not_null
       - name: product_code
+        description:
+          "Foreign key for product dimension table. Combned with sop_number, defines the grain"
         tests:
           - not_null
       - name: scenario_code
+        description:
+          "foreign key for scenarios dimension table"
         tests:
           - not_null
           - accepted_values:
@@ -23,6 +39,8 @@ models:
                 values: ['ACT', 'BUD']
 
   - name: stg_customers
+    description:
+      "Customers dimension table. Grain: customer number"
     columns:
       - name: customer_code
         tests:
@@ -30,6 +48,8 @@ models:
           - unique
 
   - name: stg_products
+    description:
+      "Products dimension table. Grain: Product Code"
     columns:
       - name: product_code
         tests: 
@@ -37,6 +57,8 @@ models:
           - unique
 
   - name: stg_scenarios
+    description:
+      "Financial scenario for financial analysis"
     columns:
       - name: scenario_code
         tests:
