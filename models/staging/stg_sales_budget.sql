@@ -6,9 +6,9 @@ renamed as (
         product_code,
         customer_code,
         cast(budget_date as date) as budget_date,
-        budget_quantity,
-        budget_unit_price,
-        budget_unit_cost,
+        budget_quantity as bud_quantity,
+        budget_unit_price as bud_unit_price,
+        budget_unit_cost as bud_unit_cost,
         (budget_quantity * budget_unit_price) as bud_gross_sales,
         (budget_quantity * budget_unit_cost) as bud_standard_cost,
         (budget_quantity * budget_unit_price)
