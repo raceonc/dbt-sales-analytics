@@ -12,7 +12,8 @@ renamed as (
         (budget_quantity * budget_unit_price) as bud_gross_sales,
         (budget_quantity * budget_unit_cost) as bud_standard_cost,
         (budget_quantity * budget_unit_price)
-            - (budget_quantity * budget_unit_cost) as bud_gross_margin
+            - (budget_quantity * budget_unit_cost) as bud_gross_margin,
+        'BUD' as scenario_code
     from source
 )
 select * from renamed

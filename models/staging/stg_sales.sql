@@ -9,14 +9,14 @@ renamed as (
         cast(transaction_date as date) as transaction_date,
         customer_code,
         product_code,
-        scenario_code,
         quantity,
         unit_price,
         unit_cost,
         (quantity * unit_price) as gross_sales,
         (quantity * unit_cost) as standard_cost,
         (quantity * unit_price) 
-            - (quantity * unit_cost) as gross_margin
+            - (quantity * unit_cost) as gross_margin,
+        'ACT' as scenario_code
         from source
 )
 

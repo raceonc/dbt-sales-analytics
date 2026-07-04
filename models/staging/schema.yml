@@ -28,11 +28,6 @@ models:
           - not_null
       - name: scenario_code
         description: "Foreign key for scenarios dimension table"
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['ACT']
       - name: quantity
         description: "Quantity of product sold."
       - name: unit_price

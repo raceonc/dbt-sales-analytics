@@ -1,3 +1,5 @@
 scenario_code,scenario_name,scenario_type
 ACT,Actuals,Actual
 BUD,Budget,Budget
+PLAN,Plan,Plan
+FCST,Forecast,Forecast
