@@ -1,0 +1,26 @@
+name: dbt CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dbt
+        run: pip install dbt-duckdb
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Build and test
+        run: dbt build
