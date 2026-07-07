@@ -76,3 +76,49 @@ models:
         description: "Quantity multiplied by unit cost."
       - name: gross_margin
         description: "Gross sales less standard cost of goods sold."
+  - name: fct_forecast_vs_actuals
+    description: >
+      Joins the latest locked forecast to realized actuals at
+      product/customer/month and exposes qty/price/cost variance. For testing forecast assumptions that
+      drift from actuals surface here as a named
+      number instead of hiding in an aggregate. Full outer join — a forecast with no
+      actual (predicted sale that didn't land) and an actual with no forecast (sale
+      nobody saw coming) are both real variance cases and both are kept.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - product_code
+              - customer_code
+              - month
+    columns:
+      - name: product_code
+        description: "Product. Part of the grain. Coalesced across both sides of the outer join."
+        tests:
+          - not_null
+      - name: customer_code
+        description: "Customer. Part of the grain. Coalesced across both sides."
+        tests:
+          - not_null
+      - name: month
+        description: "Month being compared (first of month). Part of the grain. Coalesced from forecast_month / sales_month."
+        tests:
+          - not_null
+      - name: fc_quantity
+        description: "Forecast quantity from the latest locked snapshot."
+      - name: fc_unit_price
+        description: "Forecast unit price, latest locked snapshot."
+      - name: fc_unit_cost
+        description: "Forecast unit cost, latest locked snapshot. The value that drifts in the Feb cycle."
+      - name: act_quantity
+        description: "Realized quantity, actuals rolled to month."
+      - name: act_unit_price
+        description: "Realized unit price, quantity-weighted."
+      - name: act_unit_cost
+        description: "Realized unit cost, quantity-weighted."
+      - name: qty_variance
+        description: "act_quantity minus fc_quantity. Positive = sold more than forecast."
+      - name: price_variance
+        description: "act_unit_price minus fc_unit_price."
+      - name: cost_variance
+        description: "act_unit_cost minus fc_unit_cost. The −3 on PROD-001/CUST-A March is the seeded drift, caught."

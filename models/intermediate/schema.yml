@@ -3,8 +3,9 @@ version: 2
 models:
   - name: int_actuals_monthly
     description: >
-      Actuals rolled from order-line to product/customer/month grain. Effective
-      unit price/cost are quantity-weighted. Feeds the forecast-vs-actuals variance model.
+      Actuals rolled from order-line to product/customer/month. unit_price and
+      unit_cost aren't additive, so effective values are quantity-weighted
+      (total value / total quantity). Feeds the variance mart as the actuals side.
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -14,11 +15,35 @@ models:
               - sales_month
     columns:
       - name: product_code
-        tests: 
-          - not_null
+        tests: [not_null]
       - name: customer_code
-        tests: 
-          - not_null
+        tests: [not_null]
       - name: sales_month
-        tests:
-         - not_null 
+        tests: [not_null]
+      - name: quantity
+        description: "Total units for the product/customer/month."
+      - name: avg_unit_cost
+        description: "Quantity-weighted realized unit cost. Compared against forecast cost in the variance mart."
+
+  - name: int_forecast_locked
+    description: >
+      Forecast deduped to the latest locked snapshot per product/customer/forecast_month.
+      Multiple cycles lock the same month (Jan locks March, Feb re-locks March); this keeps
+      the most recent lock via row_number() + qualify. Feeds the variance mart as the
+      forecast side.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - product_code
+              - customer_code
+              - forecast_month
+    columns:
+      - name: product_code
+        tests: [not_null]
+      - name: customer_code
+        tests: [not_null]
+      - name: forecast_month
+        tests: [not_null]
+      - name: is_locked
+        description: "Always true in this model — the dedup filters to locked snapshots only."
