@@ -1,0 +1,7 @@
+sales_analytics:
+  target: ci
+  outputs:
+    ci:
+      type: duckdb
+      path: ci.duckdb
+      threads: 1
