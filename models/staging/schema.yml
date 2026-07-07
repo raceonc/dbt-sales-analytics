@@ -3,7 +3,7 @@ version: 2
 models:
   - name: stg_sales
     description: "Posted invoice data from ERP. Grain: one row per order line item
-      by document date - unique combination of sop_number, product_code, doc_date"
+     - unique combination of sop_number, product_code, doc_date"
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -40,6 +40,65 @@ models:
         description: "Quantity multiplied by unit cost."
       - name: gross_margin
         description: "Gross sales less standard cost of goods sold."
+
+  - name: stg_sales_stepped_fc
+    description: >
+      Periodic snapshot fact for the IBP forecast cycle. Grain: one row per
+      product_code / customer_code / snapshot_date / forecast_month. Each weekly
+      upload re-forecasts forward months; is_locked marks the committed consensus
+      snapshot (the locked step, one day after supply review).
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - product_code
+              - customer_code
+              - snapshot_date
+              - forecast_month
+    columns:
+      - name: product_code
+        description: "FK to product dimension. Part of the grain."
+        tests:
+          - not_null
+      - name: customer_code
+        description: "FK to customer dimension. Part of the grain."
+        tests:
+          - not_null
+      - name: snapshot_date
+        description: "Date the forecast was uploaded; identifies the snapshot version. Part of the grain."
+        tests:
+          - not_null
+      - name: forecast_month
+        description: "Month being forecast (first of month). Part of the grain."
+        tests:
+          - not_null
+      - name: fc_quantity
+        description: "Forecast quantity."
+        tests:
+          - not_null
+      - name: fc_unit_price
+        description: "Forecast price per unit."
+      - name: fc_unit_cost
+        description: "Forecast cost per unit. Meant to track actuals; drift here is the traceability problem the project targets."
+      - name: fc_gross_sales
+        description: "fc_quantity multiplied by fc_unit_price."
+      - name: fc_standard_cost
+        description: "fc_quantity multiplied by fc_unit_cost."
+      - name: fc_gross_margin
+        description: "fc_gross_sales less fc_standard_cost."
+      - name: is_locked
+        description: >
+          True on the committed consensus snapshot (locked step after supply
+          review). False for demand-review, pre-lock, and finance snapshots.
+        tests:
+          - not_null
+      - name: scenario_code
+        description: "Scenario tag. Always 'FCST' for this source."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['FCST']
 
   - name: stg_sales_budget
     description: 
@@ -80,6 +139,51 @@ models:
         description: "Budgeted quantity multiplied by budgeted unit cost."
       - name: bud_gross_margin
         description: "Budgeted gross sales less budgeted standard cost."
+
+      - name: standard_cost_of_goods_sold
+        description: "Quantity multiplied by unit cost."
+      - name: gross_margin
+        description: "Gross sales less standard cost of goods sold."
+
+  - name: stg_sales_plan
+    description: 
+      "plan data at product/customer/month grain. Grain: unique
+      combination of product_code, customer_code, and plan_date
+      (first day of month). Distinct grain from stg_sales — plan is
+      planned at product/customer/month, actuals are transactional at
+      order/line level. Not directly unioned; compared via a rollup layer."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - product_code
+              - customer_code
+              - plan_date
+    columns:
+      - name: product_code
+        description: "Foreign key to the product dimension. Part of the grain."
+        tests:
+          - not_null
+      - name: customer_code
+        description: "Foreign key to the customer dimension. Part of the grain."
+        tests:
+          - not_null
+      - name: plan_date
+        description: "First day of the plan month. Part of the grain."
+        tests:
+          - not_null
+      - name: plan_quantity
+        description: "planed quantity."
+      - name: plan_unit_price
+        description: "planed price per unit."
+      - name: plan_unit_cost
+        description: "planed cost per unit."
+      - name: plan_gross_sales
+        description: "planed quantity multiplied by planed unit price."
+      - name: plan_standard_cost
+        description: "planed quantity multiplied by planed unit cost."
+      - name: plan_gross_margin
+        description: "planed gross sales less planed standard cost."
 
   - name: stg_customers
     description: "Customer dimension. Grain: one row per customer_code."
