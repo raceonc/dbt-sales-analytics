@@ -76,6 +76,7 @@ models:
         description: "Quantity multiplied by unit cost."
       - name: gross_margin
         description: "Gross sales less standard cost of goods sold."
+  
   - name: fct_forecast_vs_actuals
     description: >
       Joins the latest locked forecast to realized actuals at
@@ -122,3 +123,23 @@ models:
         description: "act_unit_price minus fc_unit_price."
       - name: cost_variance
         description: "act_unit_cost minus fc_unit_cost. The −3 on PROD-001/CUST-A March is the seeded drift, caught."
+
+  - name: fct_drift_log
+    description: >
+          Append-only log of forecast-vs-actuals price and cost drift, one row per
+          product/customer/month, retained across periods. Incremental: appends
+          newly-closed months, never overwrites history.
+    tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns: 
+                - product_code
+                - customer_code
+                - drift_month
+    columns:
+        - name: drift_month
+          tests: [not_null]
+        - name: price_variance
+          description: Actual unit price minus locked forecast unit price.
+        - name: cost_variance
+          description: Actual unit cost minus locked forecast unit cost.
