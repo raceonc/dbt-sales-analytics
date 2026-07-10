@@ -15,9 +15,19 @@ models:
               - sales_month
     columns:
       - name: product_code
-        tests: [not_null]
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_code
       - name: customer_code
-        tests: [not_null]
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_code
       - name: sales_month
         tests: [not_null]
       - name: quantity
@@ -40,10 +50,13 @@ models:
               - forecast_month
     columns:
       - name: product_code
-        tests: [not_null]
+        tests: 
+          - not_null
       - name: customer_code
-        tests: [not_null]
+        tests: 
+          - not_null
       - name: forecast_month
-        tests: [not_null]
+        tests: 
+          - not_null
       - name: is_locked
         description: "Always true in this model — the dedup filters to locked snapshots only."

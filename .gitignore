@@ -14,7 +14,7 @@ __pycache__/
 venv/
 
 # dbt profiles (never commit credentials)
-profiles.yml
+#profiles.yml
 
 # OS
 .DS_Store

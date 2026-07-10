@@ -3,7 +3,7 @@ version: 2
 models:
   - name: stg_sales
     description: "Posted invoice data from ERP. Grain: one row per order line item
-     - unique combination of sop_number, product_code, doc_date"
+      per scenario — unique combination of sop_number, sop_line, scenario_code."
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -23,7 +23,7 @@ models:
         tests:
           - not_null
       - name: product_code
-        description: "Foreign key for product dimension table. Combned with sop_number, defines the grain"
+        description: "Foreign key for product dimension table."
         tests:
           - not_null
       - name: scenario_code
